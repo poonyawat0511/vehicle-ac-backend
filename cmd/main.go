@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"github.com/gofiber/fiber/v3"
 	"github.com/gofiber/fiber/v3/middleware/logger"
@@ -36,5 +37,11 @@ func main() {
 	customerRoutes.CusotmerSetup(api)
 	repairRoutes.RepairSetup(api)
 
-	log.Fatal(app.Listen(":8080"))
+	port := os.Getenv("PORT")
+
+	if port == "" {
+		port = "8080"
+	}
+
+	log.Fatal(app.Listen(":" + port))
 }
