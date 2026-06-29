@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/poonyawat/vehicle-ac-backend/config"
+	"github.com/poonyawat/vehicle-ac-backend/modules/repairs/dto"
 	"github.com/poonyawat/vehicle-ac-backend/modules/repairs/model"
 	"go.mongodb.org/mongo-driver/v2/bson"
 	"go.mongodb.org/mongo-driver/v2/mongo"
@@ -65,5 +66,51 @@ func (r *RepairRepository) DeleteById(id bson.ObjectID) (model.Repair, error) {
 	if err != nil {
 		return model.Repair{}, err
 	}
+	return result, nil
+}
+
+func (r *RepairRepository) RepairDetail(id bson.ObjectID) (dto.RepairDetail, error) {
+	var result dto.RepairDetail
+
+	pipeline := mongo.Pipeline{
+		{
+			{
+				Key: "$match",
+				Value: bson.M{
+					"_id": id,
+				},
+			},
+		},
+		{
+			{
+				Key: "$lookup",
+				Value: bson.M{
+					"from":         "customers",
+					"localField":   "customerId",
+					"foreignField": "_id",
+					"as":           "customer",
+				},
+			},
+		},
+		{
+			{
+				Key: "$unwind",
+				Value: "$customer",
+			},
+		},
+	}
+
+	cursor, err := r.col.Aggregate(context.Background(), pipeline)
+	if err != nil {
+		return result, err
+	}
+
+	if cursor.Next(context.Background()) {
+		err := cursor.Decode(&result)
+		if err != nil {
+			return result, err
+		}
+	}
+
 	return result, nil
 }

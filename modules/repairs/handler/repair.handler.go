@@ -102,3 +102,20 @@ func (h *RepairHandler) DeleteById(c fiber.Ctx) error {
 	}
 	return c.Status(fiber.StatusOK).JSON(result)
 }
+
+func (h *RepairHandler) GetRepairDetail(c fiber.Ctx) error {
+	idParam := c.Params("id")
+	objID, err := bson.ObjectIDFromHex(idParam)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid Format",
+		})
+	}
+	Repair, err := h.service.RepairDetail(objID)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+			"error": "Repair not found",
+		})
+	}
+	return c.Status(fiber.StatusOK).JSON(Repair)
+}

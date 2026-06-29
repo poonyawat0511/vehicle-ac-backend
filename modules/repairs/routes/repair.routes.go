@@ -19,4 +19,5 @@ func RepairSetup(router fiber.Router) {
 	r.Get("/:id", h.GetById)
 	r.Put("/:id", h.UpdateById)
 	r.Delete("/:id", h.DeleteById)
+	r.Get("/detail/:id", h.GetRepairDetail)
 }

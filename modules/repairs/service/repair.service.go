@@ -70,3 +70,12 @@ func (s *RepairService) DeleteById(id bson.ObjectID) (model.Repair, error) {
 
 	return result, nil
 }
+
+func (s *RepairService) RepairDetail(id bson.ObjectID) (dto.RepairDetail, error) {
+	result, err := s.repo.RepairDetail(id)
+	if err != nil {
+		return dto.RepairDetail{}, err
+	}
+
+	return result, nil
+}
